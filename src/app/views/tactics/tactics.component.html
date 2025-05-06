@@ -1,0 +1,102 @@
+<div class="tactics-list">
+    <input
+      type="text"
+      [(ngModel)]="tacticName"
+      placeholder="Tactic Name"
+    />
+    <button (click)="saveTactic()">Save</button>
+  
+    <select [(ngModel)]="selectedTacticIndex">
+      <option [ngValue]="null">-- Select Tactic --</option>
+      <option
+        *ngFor="let t of tactics; let i = index"
+        [ngValue]="i"
+      >
+        {{ t.name }}
+      </option>
+    </select>
+    <button (click)="playTactic()" [disabled]="selectedTacticIndex == null">
+      Play
+    </button>
+  </div>
+  
+  <div class="controls">
+    <button (click)="setAction('move')">🏃 Move</button>
+    <button (click)="setAction('pass')">🎯 Pass</button>
+    <button (click)="setAction('screen')">🛡 Screen</button>
+    <button (click)="resetEdit()">♻ Reset</button>
+  </div>
+  
+  <div class="court-container2" (click)="onCourtClick($event)">
+    <img
+      src="../../../assets/images/basketCourt2.png"
+      alt="Court"
+      class="court-image"
+    />
+  
+    <svg class="overlay" width="1200" height="600">
+      <defs>
+        <marker
+          id="arrowhead"
+          markerWidth="10"
+          markerHeight="7"
+          refX="10"
+          refY="3.5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="0 0, 10 3.5, 0 7" fill="orange" />
+        </marker>
+      </defs>
+  
+      <line
+        *ngFor="let m of movements"
+        [attr.x1]="m.startX"
+        [attr.y1]="m.startY"
+        [attr.x2]="m.endX"
+        [attr.y2]="m.endY"
+        stroke="orange"
+        stroke-width="3"
+        marker-end="url(#arrowhead)"
+      />
+  
+      <line
+        *ngFor="let p of passes"
+        [attr.x1]="p.startX"
+        [attr.y1]="p.startY"
+        [attr.x2]="p.endX"
+        [attr.y2]="p.endY"
+        stroke="black"
+        stroke-width="2"
+        stroke-dasharray="5,5"
+      />
+  
+      <circle
+        *ngIf="screenIndicator"
+        [attr.cx]="screenIndicator.x"
+        [attr.cy]="screenIndicator.y"
+        r="15"
+        fill="white"
+        stroke="black"
+        stroke-width="2"
+      />
+    </svg>
+  
+    <div
+      *ngFor="let player of players"
+      class="player"
+      [class.selected]="selectedPlayerId === player.id"
+      [ngStyle]="{ left: player.x + 'px', top: player.y + 'px', backgroundColor: player.color }"
+      (click)="selectPlayer(player.id, $event)"
+    >
+      {{ player.number }}
+    </div>
+  
+    <div
+      class="ball"
+      [class.selectedBall]="selectedBall"
+      [ngStyle]="{ left: ball.x + 'px', top: ball.y + 'px' }"
+      (click)="selectBall($event)"
+    ></div>
+  </div>
+  

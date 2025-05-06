@@ -1,0 +1,19 @@
+<div *ngIf="isLoggedIn(); else loginLayout">
+  <app-navbar></app-navbar>
+
+  <div class="app-layout">
+    <app-sidebar></app-sidebar>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <app-footer></app-footer>
+</div>
+
+<ng-template #loginLayout>
+  <router-outlet></router-outlet>
+</ng-template>
+<!-- <fa-icon [icon]="['fas','user']"></fa-icon>
+<fa-icon [icon]="'coffee'"></fa-icon> -->
