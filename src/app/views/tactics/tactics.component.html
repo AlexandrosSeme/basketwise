@@ -1,17 +1,12 @@
 <div class="tactics-list">
-    <input
-      type="text"
-      [(ngModel)]="tacticName"
-      placeholder="Tactic Name"
-    />
+
+  <div class="tactic-controls">
+    <input type="text" [(ngModel)]="tacticName" placeholder="Tactic Name" />
     <button (click)="saveTactic()">Save</button>
-  
+
     <select [(ngModel)]="selectedTacticIndex">
       <option [ngValue]="null">-- Select Tactic --</option>
-      <option
-        *ngFor="let t of tactics; let i = index"
-        [ngValue]="i"
-      >
+      <option *ngFor="let t of tactics; let i = index" [ngValue]="i">
         {{ t.name }}
       </option>
     </select>
@@ -19,84 +14,190 @@
       Play
     </button>
   </div>
-  
-  <div class="controls">
-    <button (click)="setAction('move')">🏃 Move</button>
-    <button (click)="setAction('pass')">🎯 Pass</button>
-    <button (click)="setAction('screen')">🛡 Screen</button>
-    <button (click)="resetEdit()">♻ Reset</button>
-  </div>
-  
-  <div class="court-container2" (click)="onCourtClick($event)">
-    <img
-      src="../../../assets/images/basketCourt2.png"
-      alt="Court"
-      class="court-image"
-    />
-  
-    <svg class="overlay" width="1200" height="600">
-      <defs>
-        <marker
-          id="arrowhead"
-          markerWidth="10"
-          markerHeight="7"
-          refX="10"
-          refY="3.5"
-          orient="auto"
-          markerUnits="strokeWidth"
-        >
-          <polygon points="0 0, 10 3.5, 0 7" fill="orange" />
-        </marker>
-      </defs>
-  
-      <line
-        *ngFor="let m of movements"
-        [attr.x1]="m.startX"
-        [attr.y1]="m.startY"
-        [attr.x2]="m.endX"
-        [attr.y2]="m.endY"
-        stroke="orange"
-        stroke-width="3"
-        marker-end="url(#arrowhead)"
-      />
-  
-      <line
-        *ngFor="let p of passes"
-        [attr.x1]="p.startX"
-        [attr.y1]="p.startY"
-        [attr.x2]="p.endX"
-        [attr.y2]="p.endY"
-        stroke="black"
-        stroke-width="2"
-        stroke-dasharray="5,5"
-      />
-  
-      <circle
-        *ngIf="screenIndicator"
-        [attr.cx]="screenIndicator.x"
-        [attr.cy]="screenIndicator.y"
-        r="15"
-        fill="white"
-        stroke="black"
-        stroke-width="2"
-      />
-    </svg>
-  
-    <div
-      *ngFor="let player of players"
-      class="player"
-      [class.selected]="selectedPlayerId === player.id"
-      [ngStyle]="{ left: player.x + 'px', top: player.y + 'px', backgroundColor: player.color }"
-      (click)="selectPlayer(player.id, $event)"
-    >
-      {{ player.number }}
+</div>
+
+<div class="controls">
+  <button (click)="setAction('move')">🏃 Move</button>
+  <button (click)="setAction('pass')">🎯 Pass</button>
+  <button (click)="setAction('screen')">🛡 Screen</button>
+  <button (click)="setAction('shoot')">🏀 Shoot</button>
+  <button (click)="resetEdit()">♻ Reset</button>
+</div>
+
+
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="row p-2">
+        <div class="col-8 mx-2 d-flex justify-content-center align-items-center">
+          <div class="team-select">
+            <mat-form-field appearance="fill" class="team-picker wide-dropdown">
+              <mat-label>Select Team</mat-label>
+              <mat-select [(ngModel)]="selectedTeam" (selectionChange)="onTeamChange()">
+                <mat-option [value]="null">
+                  -- Select Team --
+                </mat-option>
+                <mat-option *ngFor="let team of teams" [value]="team" class="small-option-text">
+                  <img class="team-logo" [src]="team.teamData.logo" [alt]="team.teamData.name" width="25" height="25" />
+                  <!-- <div class="text-xs"> -->
+                  {{ team.teamData.name }}
+                  <!-- </div> -->
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          </div>
+        </div>
+        <div class="col">
+          <div class="team-info" *ngIf="selectedTeam">
+            <div class="d-flex justify-content-center align-items-center">
+              <img [src]="selectedTeam.teamData.logo" [alt]="selectedTeam.teamData.name" class="team-logo" width="70"
+                height="70">
+              <!-- <div [style.color]="selectedTeam.teamData.primaryColor">
+                  <div class="team-name text-center" [style.backgroundColor]="selectedTeam.teamData.secondaryColor">{{ selectedTeam.teamData.name }}</div>
+                </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div class="player-table-wrapper">
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>Photo</th>
+              <th>#</th>
+              <th>Name</th>
+              <th>Position</th>
+              <!-- <th>Pos. #</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let player of playersAll">
+              <td>
+                <ng-container *ngIf="player.image; else noPhoto">
+                  <img [src]="player.image" alt="" class="player-headshot">
+                </ng-container>
+                <ng-template #noPhoto>
+                  <span class="fa fa-user-circle player-headshot default-icon"></span>
+                </ng-template>
+              </td>
+              <td class="align-middle text-center">{{player.dorsal}}</td>
+              <td class="align-middle text-start">{{player.name}}</td>
+              <td class="align-middle text-center">{{player.positionName}}</td>
+              <!-- <td class="align-middle text-right">{{player.positionNumber}}</td> -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-  
-    <div
-      class="ball"
-      [class.selectedBall]="selectedBall"
-      [ngStyle]="{ left: ball.x + 'px', top: ball.y + 'px' }"
-      (click)="selectBall($event)"
-    ></div>
   </div>
-  
+  <div class="col">
+    <div class="card p-3">
+      <div class="court-container2" (click)="onCourtClick($event)">
+        <img src="../../../assets/images/basketCourt2.png" alt="Court" class="court-image" />
+
+        <svg class="overlay" width="800" height="400">
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"
+              markerUnits="strokeWidth">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#ffd700" />
+            </marker>
+            <marker id="passArrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"
+              markerUnits="strokeWidth">
+              <polygon points="0 0, 10 3.5, 0 7" fill="white" />
+            </marker>
+          </defs>
+
+          <line *ngFor="let m of movements" [attr.x1]="m.startX" [attr.y1]="m.startY" [attr.x2]="m.endX"
+            [attr.y2]="m.endY" stroke="#ffd700" stroke-width="2" stroke-opacity="0.5" stroke-linecap="round"
+            marker-end="url(#arrowhead)" class="movement-line" />
+          <line *ngFor="let m of movements" [attr.x1]="m.startX" [attr.y1]="m.startY" [attr.x2]="m.endX"
+            [attr.y2]="m.endY" stroke="white" stroke-width="7" stroke-opacity="0.1" stroke-linecap="round"
+            class="movement-line-border" />
+
+          <line *ngFor="let p of passes" [attr.x1]="p.startX" [attr.y1]="p.startY" [attr.x2]="p.endX" [attr.y2]="p.endY"
+            stroke="white" stroke-width="2" stroke-opacity="1.2" stroke-dasharray="7" marker-end="url(#passArrowhead)"
+            class="pass-line" />
+          <line *ngFor="let p of passes" [attr.x1]="p.startX" [attr.y1]="p.startY" [attr.x2]="p.endX" [attr.y2]="p.endY"
+            stroke="black" stroke-width="4" stroke-opacity="0.3" stroke-dasharray="7" class="pass-line-border" />
+
+          <circle *ngIf="screenIndicator" [attr.cx]="screenIndicator.x" [attr.cy]="screenIndicator.y" r="20"
+            fill="rgba(255, 255, 255, 0.2)" stroke="#e74c3c" stroke-width="2" stroke-opacity="0.8"
+            class="screen-indicator" />
+          <text *ngIf="screenIndicator" [attr.x]="screenIndicator.x" [attr.y]="screenIndicator.y" text-anchor="middle"
+            dominant-baseline="middle" fill="#e74c3c" font-weight="bold" font-size="14" class="screen-text">
+            Screen
+          </text>
+
+          <g *ngIf="shootIndicator">
+            <circle [attr.cx]="shootIndicator.x" [attr.cy]="shootIndicator.y" r="25" fill="rgba(255, 0, 0, 0.2)"
+              stroke="red" stroke-width="2" />
+            <text [attr.x]="shootIndicator.x" [attr.y]="shootIndicator.y - 5" text-anchor="middle"
+              dominant-baseline="middle" fill="red" font-weight="bold" font-size="20">
+              🏀
+            </text>
+          </g>
+        </svg>
+
+        <div *ngFor="let player of players2" class="player" [class.selected]="selectedPlayerId == player.id"
+          [ngStyle]="{ left: player.x + 'px', top: player.y + 'px', backgroundColor: player.color, borderColor: player.color2 }"
+          (click)="selectPlayer(player.id, $event)">
+          {{ player.number }}
+          <div class="player-name-on-court">{{ player.name.split(',')[0] }}</div>
+        </div>
+
+        <!-- <div *ngFor="let player of players" class="player" [class.selected]="selectedPlayerId === player.id" [ngStyle]="{
+          left: player.x + 'px',
+          top: player.y + 'px',
+          backgroundColor: player.color,
+          borderColor: player.color2
+        }" (click)="selectPlayer(player.id, $event)">
+          {{ player.number }}
+          <div class="player-name-on-court">{{ player.name.split(',')[0] }}</div>
+        </div> -->
+
+        <div class="ball" [class.selectedBall]="selectedBall" [ngStyle]="{ left: ball.x + 'px', top: ball.y + 'px' }"
+          (click)="selectBall($event)">
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="col">
+    <div class="card">
+      <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+          <div class="team-select">
+            <mat-form-field appearance="fill" class="team-picker">
+              <mat-label>Select Team</mat-label>
+              <mat-select [(ngModel)]="selectedTeam" (selectionChange)="onTeamChange()">
+                <mat-option [value]="null">
+                  -- Select Team --
+                </mat-option>
+                <mat-option *ngFor="let team of teams" [value]="team">
+                  <img class="team-logo" [src]="team.teamData.logo" [alt]="team.teamData.name" width="25" height="25" />
+                  {{ team.teamData.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          </div>
+        </div>
+        <div class="col">
+          <div class="team-info" *ngIf="selectedTeam">
+            <div class="d-flex justify-content-center align-items-center">
+              <img [src]="selectedTeam.teamData.logo" [alt]="selectedTeam.teamData.name" class="team-logo" width="80"
+                height="80">
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div *ngFor="let team of teams">
+        <img [src]="team.teamData.logo" alt="" width="40" height="40">
+        {{team.teamData.name }}
+      </div>
+    </div>
+  </div> -->
+</div>

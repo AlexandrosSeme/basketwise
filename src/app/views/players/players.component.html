@@ -1,1 +1,385 @@
-<p>players works!</p>
+<div class="container mt-4">
+    <!-- Team Selection with Logo -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card team-selection-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <img *ngIf="selectedTeam" [src]="selectedTeam.teamData.logo" [alt]="selectedTeam.teamData.name"
+                            class="team-logo me-3">
+                        <h5 class="card-title mb-0">Select Team</h5>
+                    </div>
+                    <mat-form-field appearance="outline" class="team-picker wide-dropdown">
+                        <mat-label>Select Team</mat-label>
+                        <mat-select [(ngModel)]="selectedTeam" (selectionChange)="onTeamChange()">
+                            <mat-option [value]="null">
+                                -- Select Team --
+                            </mat-option>
+                            <mat-option *ngFor="let team of teams" [value]="team" class="small-option-text">
+                                <img class="team-logo" [src]="team.teamData.logo" [alt]="team.teamData.name" width="25"
+                                    height="25" />
+                                {{ team.teamData.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- Charts Section -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card chart-card">
+                <div class="card-body">
+                    <div class="chart-header">
+                        <h5 class="card-title">Points Per Game</h5>
+                        <div class="team-info" *ngIf="selectedTeam">
+                            <img [src]="selectedTeam.teamData.logo" [alt]="selectedTeam.teamData.name"
+                                class="team-logo-small">
+                            <span>{{selectedTeam.teamData.name}}</span>
+                        </div>
+                    </div>
+                    <apx-chart [series]="pointsChartOptions.series!" [chart]="pointsChartOptions.chart!"
+                        [xaxis]="pointsChartOptions.xaxis!" [plotOptions]="pointsChartOptions.plotOptions!"
+                        [dataLabels]="pointsChartOptions.dataLabels!" [title]="pointsChartOptions.title!">
+                    </apx-chart>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Individual Player Stats Section -->
+    <div class="row mb-4" *ngIf="players.length > 0">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0">Player Statistics</h5>
+                        <div class="team-info" *ngIf="selectedTeam">
+                            <img [src]="selectedTeam.teamData.logo" [alt]="selectedTeam.teamData.name"
+                                class="team-logo-small" width="50" height="50">
+                            <span>{{selectedTeam.teamData.name}}</span>
+                        </div>
+                    </div>
+                    <mat-form-field appearance="outline" class="player-picker mb-4">
+                        <mat-label>Select Player</mat-label>
+                        <mat-select [(ngModel)]="selectedPlayer" (selectionChange)="onPlayerStatsChange()">
+                            <mat-option [value]="null">
+                                -- Select Player --
+                            </mat-option>
+                            <mat-option *ngFor="let player of players" [value]="player" class="player-option">
+                                <div class="d-flex align-items-center">
+                                    <div class="player-image-container me-2">
+                                        <img [src]="player.images?.headshot" [alt]="player.person.name"
+                                            class="player-image" width="50" height="50">
+                                    </div>
+                                    <div>
+                                        <div class="player-name">
+                                            {{player.dorsal}} - {{player.person.name}} - {{player.positionName}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <div class="player-stats-display" *ngIf="selectedPlayer">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="player-profile">
+                                    <div class="player-image-large">
+                                        <img [src]="selectedPlayer.images?.headshot" [alt]="selectedPlayer.person.name">
+                                    </div>
+                                    <div class="player-info">
+                                        <h3 class="player-name">{{selectedPlayer.person.name}}</h3>
+                                        <div class="player-details">
+                                            <span class="player-number">#{{selectedPlayer.dorsal}}</span>
+                                            <span class="player-position">{{selectedPlayer.positionName}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <div class="stat-icon points-icon">
+                                            <img src="https://fonts.gstatic.com/s/i/materialicons/sports_basketball/v1/24px.svg" alt="points">
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-value">{{selectedPlayer.stats.pointsPerGame}}</div>
+                                            <div class="stat-label">Points Per Game</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-icon fg-icon">
+                                            <img src="https://fonts.gstatic.com/s/i/materialicons/gps_fixed/v1/24px.svg" alt="field goal">
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-value">{{selectedPlayer.stats.fieldGoalPercentage}}%</div>
+                                            <div class="stat-label">2-Field Goal %</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-icon three-icon">
+                                            <img src="https://fonts.gstatic.com/s/i/materialicons/gps_fixed/v1/24px.svg" alt="three point">
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-value">{{selectedPlayer.stats.threePointPercentage}}%</div>
+                                            <div class="stat-label">3-Point %</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-icon assists-icon">
+                                            <img src="https://fonts.gstatic.com/s/i/materialicons/group/v1/24px.svg" alt="assists">
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-value">{{selectedPlayer.stats.assists}}</div>
+                                            <div class="stat-label">Assists</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-icon rebounds-icon">
+                                            <img src="https://fonts.gstatic.com/s/i/materialicons/vertical_align_top/v1/24px.svg" alt="rebounds">
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-value">{{selectedPlayer.stats.rebounds}}</div>
+                                            <div class="stat-label">Rebounds</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-icon steals-icon">
+                                            <img src="https://fonts.gstatic.com/s/i/materialicons/security/v1/24px.svg" alt="steals">
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-value">{{selectedPlayer.stats.steals}}</div>
+                                            <div class="stat-label">Steals</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-icon blocks-icon">
+                                            <img src="https://fonts.gstatic.com/s/i/materialicons/block/v1/24px.svg" alt="blocks">
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-value">{{selectedPlayer.stats.blocks}}</div>
+                                            <div class="stat-label">Blocks</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Comparison Section -->
+    <div class="row mb-4" *ngIf="players.length > 0">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0">Player Comparison</h5>
+                        <div class="team-info" *ngIf="selectedTeam">
+                            <span>{{selectedTeam.teamData.name}}</span>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-md-5">
+                            <div class="player-select-wrapper">
+                                <mat-form-field appearance="outline" class="player-picker">
+                                    <mat-label>Select First Player</mat-label>
+                                    <mat-select [(ngModel)]="selectedPlayer1" (selectionChange)="updateRadarChart()">
+                                        <mat-option [value]="null">
+                                            -- Select Player --
+                                        </mat-option>
+                                        <mat-option *ngFor="let player of players" [value]="player"
+                                            class="player-option">
+                                            <div class="d-flex align-items-center">
+                                                <div class="player-image-container me-2">
+                                                    <img [src]="player.images?.headshot" [alt]="player.person.name"
+                                                        class="p-1 player-image" width="50" height="50">
+                                                </div>
+                                                <div>
+                                                    <div class="player-name">
+                                                        {{player.dorsal}} - {{player.person.name}} -
+                                                        {{player.positionName}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <div class="selected-player-info" *ngIf="selectedPlayer1">
+                                    <div class="d-flex align-items-center">
+                                        <div class="player-image-container me-3">
+                                            <img [src]="selectedPlayer1.images?.headshot"
+                                                [alt]="selectedPlayer1.person.name" class="player-image">
+                                        </div>
+                                        <div>
+                                            <div class="player-name">{{selectedPlayer1.person.name}}</div>
+                                            <div class="player-details">
+                                                <span class="player-number">#{{selectedPlayer1.dorsal}}</span>
+                                                <span class="player-position">{{selectedPlayer1.positionName}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-center justify-content-center">
+                            <div class="vs-badge">VS</div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="player-select-wrapper">
+                                <mat-form-field appearance="outline" class="player-picker">
+                                    <mat-label>Select Second Player</mat-label>
+                                    <mat-select [(ngModel)]="selectedPlayer2" (selectionChange)="updateRadarChart()">
+                                        <mat-option [value]="null">
+                                            -- Select Player --
+                                        </mat-option>
+                                        <mat-option *ngFor="let player of players" [value]="player"
+                                            class="player-option">
+                                            <div class="d-flex align-items-center">
+                                                <div class="player-image-container me-2">
+                                                    <img [src]="player.images?.headshot" [alt]="player.person.name"
+                                                        class="player-image" width="50" height="50">
+                                                </div>
+                                                <div>
+                                                    <div class="player-name">
+                                                        {{player.dorsal}} - {{player.person.name}} -
+                                                        {{player.positionName}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <div class="selected-player-info" *ngIf="selectedPlayer2">
+                                    <div class="d-flex align-items-center">
+                                        <div class="player-image-container me-3">
+                                            <img [src]="selectedPlayer2.images?.headshot"
+                                                [alt]="selectedPlayer2.person.name" class="player-image">
+                                        </div>
+                                        <div>
+                                            <div class="player-name">{{selectedPlayer2.person.name}}</div>
+                                            <div class="player-details">
+                                                <span class="player-number">#{{selectedPlayer2.dorsal}}</span>
+                                                <span class="player-position">{{selectedPlayer2.positionName}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card chart-card">
+                <div class="card-body">
+                    <div class="chart-header">
+                        <h5 class="card-title">Shooting Percentages</h5>
+                        <div class="team-info" *ngIf="selectedTeam">
+                            <img [src]="selectedTeam.teamData.logo" [alt]="selectedTeam.teamData.name"
+                                class="team-logo-small">
+                            <span>{{selectedTeam.teamData.name}}</span>
+                        </div>
+                    </div>
+                    <apx-chart [series]="shootingChartOptions.series!" [chart]="shootingChartOptions.chart!"
+                        [xaxis]="shootingChartOptions.xaxis!" [stroke]="shootingChartOptions.stroke!"
+                        [title]="shootingChartOptions.title!">
+                    </apx-chart>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card chart-card">
+                <div class="card-body">
+                    <div class="chart-header">
+                        <h5 class="card-title">Team Comparison</h5>
+                        <div class="team-info" *ngIf="selectedTeam">
+                            <img [src]="selectedTeam.teamData.logo" [alt]="selectedTeam.teamData.name"
+                                class="team-logo-small">
+                            <span>{{selectedTeam.teamData.name}}</span>
+                        </div>
+                    </div>
+                    <apx-chart [series]="radarChartOptions.series!" [chart]="radarChartOptions.chart!"
+                        [xaxis]="radarChartOptions.xaxis!" [title]="radarChartOptions.title!">
+                    </apx-chart>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Stats Cards -->
+    <div class="row" *ngIf="players.length > 0">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0">Team Statistics</h5>
+                        <div class="team-info" *ngIf="selectedTeam">
+                            <img [src]="selectedTeam.teamData.logo" [alt]="selectedTeam.teamData.name"
+                                class="team-logo-small" width="50" height="50">
+                            <span>{{selectedTeam.teamData.name}}</span>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Player</th>
+                                    <th>PPG</th>
+                                    <th>FG%</th>
+                                    <th>3P%</th>
+                                    <th>AST</th>
+                                    <th>REB</th>
+                                    <th>STL</th>
+                                    <th>BLK</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let player of players" class="player-row">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="player-image-container me-3">
+                                                <img [src]="player.images?.headshot" [alt]="player.person.name"
+                                                    class="player-image">
+                                            </div>
+                                            <div>
+                                                <div class="player-name">{{player.person.name}}</div>
+                                                <div class="player-details">
+                                                    <span class="player-number">#{{player.dorsal}}</span>
+                                                    <span class="player-position">{{player.positionName}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{player.stats.pointsPerGame}}</td>
+                                    <td>{{player.stats.fieldGoalPercentage}}%</td>
+                                    <td>{{player.stats.threePointPercentage}}%</td>
+                                    <td>{{player.stats.assists}}</td>
+                                    <td>{{player.stats.rebounds}}</td>
+                                    <td>{{player.stats.steals}}</td>
+                                    <td>{{player.stats.blocks}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
